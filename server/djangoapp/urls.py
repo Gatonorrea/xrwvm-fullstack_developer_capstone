@@ -10,7 +10,7 @@ urlpatterns = [
     path('login/', TemplateView.as_view(template_name="index.html")),
 
     # Path for registration
-    path(route='register', view=views.registration, name='register'),
+    path(route='register', view=views.registration, name='register'),  # Registration route
 
     # Path for logout
     path(route='logout', view=views.logout_request, name='logout'),
