@@ -44,34 +44,35 @@ def logout_request(request):
 # Create a `registration` view to handle sign up request
 @csrf_exempt
 def registration(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        username = data['userName']
-        password = data['password']
-        email = data['email']
-        first_name = data['firstName']
-        last_name = data['lastName']
+    context = {}
 
+    data = json.loads(request.body)
+    username = data['userName']
+    password = data['password']
+    first_name = data['firstName']
+    last_name = data['lastName']
+    email = data['email']
+    username_exist = False
+    email_exist = False
+    try:
         # Check if user already exists
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({"status": "User already exists"})
+        User.objects.get(username=username)
+        username_exist = True
+    except:
+        # If not, simply log this is a new user
+        logger.debug("{} is new user".format(username))
 
-        # Create new user
-        user = User.objects.create_user(
-            username=username,
-            password=password,
-            email=email,
-            first_name=first_name,
-            last_name=last_name
-        )
-        user.save()
-
-        # Authenticate and log in the user
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return JsonResponse({"userName": username, "status": "Authenticated"})
-    return JsonResponse({"status": "Registration failed"})
+    # If it is a new user
+    if not username_exist:
+        # Create user in auth_user table
+        user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name,password=password, email=email)
+        # Login the user and redirect to list page
+        login(request, user)
+        data = {"userName":username,"status":"Authenticated"}
+        return JsonResponse(data)
+    else :
+        data = {"userName":username,"error":"Already Registered"}
+        return JsonResponse(data)
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
