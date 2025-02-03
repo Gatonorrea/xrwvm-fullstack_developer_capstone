@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import LoginPanel from './components/Login/Login'; // Import the LoginPanel component
 import Dealers from './components/Dealers/Dealers';
+import Dealer from "./components/Dealers/Dealer";
 
 function App() {
   return (
@@ -14,6 +15,8 @@ function App() {
 
       {/* Add more routes here as needed */}
         <Route path="/dealers" element={<Dealers/>} />
+         {/* Add more routes here as needed */}
+        <Route path="/dealer/:id" element={<Dealer/>} />
     </Routes>
   );
 }
