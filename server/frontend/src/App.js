@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import LoginPanel from './components/Login/Login'; // Import the LoginPanel component
+import Dealers from './components/Dealers/Dealers';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Route path="/" element={<LoginPanel />} />
 
       {/* Add more routes here as needed */}
+        <Route path="/dealers" element={<Dealers/>} />
     </Routes>
   );
 }
