@@ -1,30 +1,108 @@
-from django.urls import path
-from django.views.generic import TemplateView  # Import TemplateView
-from django.conf.urls.static import static
-from django.conf import settings
-from . import views  # Import the views module
+# Uncommented required imports
+from django.shortcuts import render
+from django.http import HttpResponseRedirect, HttpResponse
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth import logout
+from django.contrib import messages
+from datetime import datetime
 
-app_name = 'djangoapp'
-urlpatterns = [
-    # Path for login (serves the React app's index.html)
-    path('login/', TemplateView.as_view(template_name="index.html")),
+from django.http import JsonResponse
+from django.contrib.auth import login, authenticate
+import logging
+import json
+from django.views.decorators.csrf import csrf_exempt
+# from .populate import initiate  # Uncomment if needed
 
-    # Path for registration
-    path(route='register', view=views.registration, name='register'),
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
-    # Path for logout
-    path(route='logout', view=views.logout_request, name='logout'),
 
-    # Path for dealerships
-    path(route='dealerships', view=views.get_dealerships, name='dealerships'),
+# Create your views here.
 
-    # Path for dealer reviews
-    path(route='dealer/<int:dealer_id>/reviews', view=views.get_dealer_reviews, name='dealer_reviews'),
+# Create a `login_request` view to handle sign in request
+@csrf_exempt
+def login_user(request):
+    # Get username and password from request.POST dictionary
+    data = json.loads(request.body)
+    username = data['userName']
+    password = data['password']
+    # Try to check if provide credential can be authenticated
+    user = authenticate(username=username, password=password)
+    data = {"userName": username}
+    if user is not None:
+        # If user is valid, call login method to login current user
+        login(request, user)
+        data = {"userName": username, "status": "Authenticated"}
+    return JsonResponse(data)
 
-    # Path for dealer details
-    path(route='dealer/<int:dealer_id>/details', view=views.get_dealer_details, name='dealer_details'),
+# Create a `logout_request` view to handle sign out request
+@csrf_exempt
+def logout_request(request):
+    # Get the username of the currently logged-in user
+    username = request.user.username if request.user.is_authenticated else ""
 
-    # Path for adding a review
-    path(route='add_review', view=views.add_review, name='add_review'),
+    # Log out the user
+    logout(request)
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Return a JSON response with the username
+    data = {"userName": username}
+    return JsonResponse(data)
+
+# Create a `registration` view to handle sign up request
+@csrf_exempt
+def registration(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data['userName']
+        password = data['password']
+        email = data['email']
+        first_name = data['firstName']
+        last_name = data['lastName']
+
+        # Check if user already exists
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"status": "User already exists"})
+
+        # Create new user
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name
+        )
+        user.save()
+
+        # Authenticate and log in the user
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({"userName": username, "status": "Authenticated"})
+    return JsonResponse({"status": "Registration failed"})
+
+# Update the `get_dealerships` view to render the index page with a list of dealerships
+def get_dealerships(request):
+    # Add logic to fetch dealerships (e.g., from a database or API)
+    dealerships = []  # Replace with actual data
+    return JsonResponse({"dealerships": dealerships})
+
+# Create a `get_dealer_reviews` view to render the reviews of a dealer
+def get_dealer_reviews(request, dealer_id):
+    # Add logic to fetch reviews for the dealer
+    reviews = []  # Replace with actual data
+    return JsonResponse({"reviews": reviews})
+
+# Create a `get_dealer_details` view to render the dealer details
+def get_dealer_details(request, dealer_id):
+    # Add logic to fetch dealer details
+    dealer_details = {}  # Replace with actual data
+    return JsonResponse(dealer_details)
+
+# Create a `add_review` view to submit a review
+def add_review(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        # Add logic to save the review (e.g., to a database)
+        return JsonResponse({"status": "Review added"})
+    return JsonResponse({"status": "Failed to add review"})
