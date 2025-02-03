@@ -1,0 +1,29 @@
+<!-- templates/static_pages/contact.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Us</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/about/">About</a>
+        <a class="active" href="/contact/">Contact Us</a>
+    </div>
+
+    <div class="contact-container">
+        <h1>Contact Best Cars</h1>
+        <p>We'd love to hear from you! Reach out to us for any inquiries or feedback.</p>
+
+        <div class="contact-info">
+            <p><strong>Address:</strong> 1234 Best Cars Lane, Auto City, CA 90210</p>
+            <p><strong>Phone:</strong> +1 (123) 456-7890</p>
+            <p><strong>Email:</strong> contact@bestcars.com</p>
+            <p><strong>Business Hours:</strong> Mon-Fri: 9 AM - 6 PM, Sat: 10 AM - 4 PM</p>
+        </div>
+    </div>
+</body>
+</html>
