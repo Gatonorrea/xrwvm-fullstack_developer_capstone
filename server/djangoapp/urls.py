@@ -1,16 +1,16 @@
-# Uncommented imports
 from django.urls import path
+from django.views.generic import TemplateView  # Import TemplateView
 from django.conf.urls.static import static
 from django.conf import settings
 from . import views  # Import the views module
 
 app_name = 'djangoapp'
 urlpatterns = [
+    # Path for login (serves the React app's index.html)
+    path('login/', TemplateView.as_view(template_name="index.html")),
+
     # Path for registration
     path(route='register', view=views.registration, name='register'),
-
-    # Path for login
-    path(route='login', view=views.login_user, name='login'),
 
     # Path for logout
     path(route='logout', view=views.logout_request, name='logout'),
