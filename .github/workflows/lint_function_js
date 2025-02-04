@@ -1,0 +1,35 @@
+name: Lint JavaScript Code
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests targeting the main branch
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Use Node.js version 16 (or any version you prefer)
+
+      # Install jshint
+      - name: Install jshint
+        run: npm install -g jshint
+
+      # Run jshint linting
+      - name: Run jshint
+        run: |
+          echo "Running jshint linting..."
+          jshint database/ --reporter=checkstyle
+          echo "Linting completed successfully!"
